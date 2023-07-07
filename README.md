@@ -3,7 +3,7 @@
 A Discord Modmail Bot is a powerful tool that allows server members to contact the server moderators/administrators privately, creating a streamlined and efficient system for handling user inquiries, reports, and other communication.
 
 ## Table of Contents
-
+- [Discord Server](https://discord.gg/ffmkewQ4R7)
 - [Features](#features)
 - [Installation](#installation)
 - [Configuration](#configuration)
