@@ -111,7 +111,7 @@ async def on_message(message):
         thread = await msg.create_thread(
             name=f"ticket-{message.author.id}"
         )
-        await thread.send(f"<@&1117382872052015104> {message.author.mention} has created a thread.")
+        await thread.send(f"@everyone {message.author.mention} has created a thread.")
         embed1 = discord.Embed(description=message.content, colour=0xFEE75C)
         embed1.set_author(name=message.author, icon_url=message.author.avatar.url)
         await threads.send(embed=embed1)
