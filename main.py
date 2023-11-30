@@ -43,6 +43,21 @@ async def timeout(ctx,user:discord.Member,min=1440,reason=None):
     embed = discord.Embed(description=f"{user} is successfully timeout till <t:{until}>.",color=discord.Color.green())
     await ctx.send(embed=embed)
     await user.timeout(until)
+
+@bot.command()
+async def status(ctx,status_type:str,status):
+    if status == None:
+        status = f"{ctx.guild.name}"
+    if status_type == "w":
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,name=status))
+    elif status_type == "l":
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,name=status))
+    elif status_type == "c":
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing,name=status))
+    elif status_type == "s":
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming,name=status, url=f"twitch.tv/{status}"))
+    embed = discord.Embed(description=f"Successfully changed my status to {status} in {status_type}.",color=discord.Color.green())
+    await ctx.send(embed=embed)
     
 @bot.command(aliases=['p'])
 async def stats(ctx):
@@ -92,11 +107,11 @@ async def on_message(message):
 
     if isinstance(message.channel, discord.DMChannel):
         guild = bot.get_guild(config.GUILD_ID)
-        channel = bot.get_channel(config.TOKEN_CHANNEL_ID)
+        channel = bot.get_channel(config.TICKET_CHANNEL_ID)
         thread_id = db.find_one({'user':str(message.author.id)})
         if thread_id:
             threads = channel.get_thread(thread_id)
-            if threads:
+            if threads != None:
                 embed = discord.Embed(description=message.content, colour=0xFEE75C)
                 embed.set_author(name=message.author, icon_url=message.author.avatar.url)
                 await threads.send(embed=embed)
@@ -111,7 +126,14 @@ async def on_message(message):
         thread = await msg.create_thread(
             name=f"ticket-{message.author.id}"
         )
-        await thread.send(f"@everyone {message.author.mention} has created a thread.")
+        roles_to_ping = ""
+        for roles in config.TICKET_SUPPORT_IDS_TO_MENTION:
+            try:
+                role_ = guild.get_role(int(roles))
+                roles_to_ping += f"{role_.mention},"
+            except Exception as e:
+                print(f"[ERROR] {e}")
+        await thread.send(f"{roles_to_ping} {message.author.mention} has created a thread.")
         embed1 = discord.Embed(description=message.content, colour=0xFEE75C)
         embed1.set_author(name=message.author, icon_url=message.author.avatar.url)
         await threads.send(embed=embed1)
